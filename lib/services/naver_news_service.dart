@@ -63,9 +63,10 @@ class NaverNewsService {
     String query = '주식 증시',
     int display = 20,
   }) async {
-    final uri = Uri.parse(
-        '$_baseUrl?query=${Uri.encodeComponent(query)}&display=$display&sort=date');
-    final response = await http.get(uri, headers: {
+    final naverUrl =
+        '$_baseUrl?query=${Uri.encodeComponent(query)}&display=$display&sort=date';
+    final proxyUrl = 'https://corsproxy.io/?${Uri.encodeComponent(naverUrl)}';
+    final response = await http.get(Uri.parse(proxyUrl), headers: {
       'X-Naver-Client-Id': _clientId,
       'X-Naver-Client-Secret': _clientSecret,
     });
