@@ -25,7 +25,7 @@ class DashboardScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(right: 16, top: 8),
                 child: Text(
-                  'v1.1.1',
+                  'v1.1.2',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.5),
                     fontSize: 11,
