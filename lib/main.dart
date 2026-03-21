@@ -3,6 +3,7 @@ import 'screens/dashboard_screen.dart';
 import 'screens/search_screen.dart';
 import 'screens/hot_stocks_screen.dart';
 import 'screens/news_screen.dart';
+import 'screens/ai_recommend_screen.dart';
 
 void main() {
   runApp(const MFlowApp());
@@ -45,6 +46,7 @@ class _MainScreenState extends State<MainScreen> {
     DashboardScreen(),
     SearchScreen(),
     HotStocksScreen(),
+    AiRecommendScreen(),
     NewsScreen(),
   ];
 
@@ -81,6 +83,11 @@ class _MainScreenState extends State<MainScreen> {
             icon: Icon(Icons.local_fire_department_outlined),
             activeIcon: Icon(Icons.local_fire_department),
             label: '급등주',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.auto_awesome_outlined),
+            activeIcon: Icon(Icons.auto_awesome),
+            label: 'AI추천',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.newspaper_outlined),

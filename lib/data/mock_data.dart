@@ -1,4 +1,5 @@
 import '../models/stock.dart';
+import '../models/recommendation.dart';
 
 final List<Stock> mockStocks = [
   Stock(
@@ -159,5 +160,102 @@ final List<NewsItem> mockNews = [
     source: '이데일리',
     time: '2시간 전',
     summary: '현대자동차가 연간 전기차 판매 목표를 상향 조정했다. 주요 증권사들이 목표주가를 잇따라 상향하고 있다.',
+  ),
+];
+
+final List<StockRecommendation> mockShortTermRecs = [
+  StockRecommendation(
+    symbol: '005930',
+    name: '삼성전자',
+    currentPrice: 74800,
+    targetPrice: 76500,
+    expectedReturnPercent: 2.27,
+    confidenceScore: 82,
+    period: RecommendPeriod.shortTerm,
+    riskLevel: '낮음',
+    reasons: [
+      '거래량 전일 대비 42% 급증',
+      '5일 이동평균선 상향 돌파',
+      '외국인 순매수 지속 (3일 연속)',
+    ],
+  ),
+  StockRecommendation(
+    symbol: '068270',
+    name: '셀트리온',
+    currentPrice: 178000,
+    targetPrice: 184000,
+    expectedReturnPercent: 3.37,
+    confidenceScore: 74,
+    period: RecommendPeriod.shortTerm,
+    riskLevel: '보통',
+    reasons: [
+      'MACD 골든크로스 발생',
+      '바이오 섹터 전반적 강세',
+      'RSI 45 → 상승 여력 충분',
+    ],
+  ),
+  StockRecommendation(
+    symbol: '035420',
+    name: 'NAVER',
+    currentPrice: 214000,
+    targetPrice: 219000,
+    expectedReturnPercent: 2.34,
+    confidenceScore: 68,
+    period: RecommendPeriod.shortTerm,
+    riskLevel: '보통',
+    reasons: [
+      'AI 사업 확장 뉴스 모멘텀',
+      '볼린저밴드 하단 반등',
+      '기관 순매수 유입',
+    ],
+  ),
+];
+
+final List<StockRecommendation> mockNextDayRecs = [
+  StockRecommendation(
+    symbol: '373220',
+    name: 'LG에너지솔루션',
+    currentPrice: 398000,
+    targetPrice: 415000,
+    expectedReturnPercent: 4.27,
+    confidenceScore: 79,
+    period: RecommendPeriod.nextDay,
+    riskLevel: '보통',
+    reasons: [
+      '글로벌 전기차 시장 확대 수혜',
+      '20일 이동평균선 지지 확인',
+      '미국 인플레감축법(IRA) 수혜 기대',
+      '기관·외국인 동반 순매수',
+    ],
+  ),
+  StockRecommendation(
+    symbol: '005380',
+    name: '현대자동차',
+    currentPrice: 238000,
+    targetPrice: 248000,
+    expectedReturnPercent: 4.20,
+    confidenceScore: 76,
+    period: RecommendPeriod.nextDay,
+    riskLevel: '낮음',
+    reasons: [
+      '전기차 판매 목표 상향 발표',
+      '증권사 목표주가 줄줄이 상향',
+      '52주 신고가 근접',
+    ],
+  ),
+  StockRecommendation(
+    symbol: '247540',
+    name: '에코프로비엠',
+    currentPrice: 142000,
+    targetPrice: 152000,
+    expectedReturnPercent: 7.04,
+    confidenceScore: 61,
+    period: RecommendPeriod.nextDay,
+    riskLevel: '높음',
+    reasons: [
+      '수주 잔고 역대 최대 기록',
+      '단기 급등 후 조정 마무리',
+      '2차전지 섹터 테마 지속',
+    ],
   ),
 ];
