@@ -414,25 +414,6 @@ class _NewsCard extends StatelessWidget {
                         fontSize: 15)),
                 const SizedBox(height: 10),
                 ...analysis.predictions.map((p) => _StockPredictionTile(prediction: p)),
-              ] else ...[
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.info_outline,
-                          size: 16, color: Colors.grey.shade400),
-                      const SizedBox(width: 8),
-                      Text('관련 종목을 찾지 못했습니다',
-                          style: TextStyle(
-                              color: Colors.grey.shade500, fontSize: 13)),
-                    ],
-                  ),
-                ),
               ],
               const SizedBox(height: 24),
             ],
