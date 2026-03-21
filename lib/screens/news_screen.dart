@@ -345,12 +345,40 @@ class _NewsCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       height: 1.4)),
               const SizedBox(height: 16),
-              Text(summary,
-                  style: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontSize: 15,
-                      height: 1.6)),
-              const SizedBox(height: 24),
+
+              // 뉴스 요약 섹션
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.blue.shade100),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.summarize_outlined,
+                            size: 16, color: Colors.blue.shade700),
+                        const SizedBox(width: 6),
+                        Text('뉴스 요약',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: Colors.blue.shade700)),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Text(summary.isNotEmpty ? summary : '요약 정보가 없습니다.',
+                        style: TextStyle(
+                            color: Colors.blue.shade900,
+                            fontSize: 14,
+                            height: 1.6)),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
 
               // AI Analysis Section
               Container(
