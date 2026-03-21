@@ -353,8 +353,32 @@ class _NewsCard extends StatelessWidget {
                 ),
               ),
 
+              const SizedBox(height: 20),
+              if (link.isNotEmpty)
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      final uri = Uri.parse(link);
+                      if (await canLaunchUrl(uri)) {
+                        await launchUrl(uri,
+                            mode: LaunchMode.externalApplication);
+                      }
+                    },
+                    icon: const Icon(Icons.open_in_new, size: 18),
+                    label: const Text('원문 보기'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF1A1A2E),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ),
+
               if (analysis.predictions.isNotEmpty) ...[
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 const Text('관련 종목 예상',
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -381,30 +405,6 @@ class _NewsCard extends StatelessWidget {
                   ),
                 ),
               ],
-
-              const SizedBox(height: 20),
-              if (link.isNotEmpty)
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () async {
-                      final uri = Uri.parse(link);
-                      if (await canLaunchUrl(uri)) {
-                        await launchUrl(uri,
-                            mode: LaunchMode.externalApplication);
-                      }
-                    },
-                    icon: const Icon(Icons.open_in_new, size: 18),
-                    label: const Text('원문 보기'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1A1A2E),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                    ),
-                  ),
-                ),
               const SizedBox(height: 24),
             ],
           ),
