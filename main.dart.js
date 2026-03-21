@@ -25879,7 +25879,7 @@ JF(a6){var s=0,r=A.T(t.iZ),q,p=2,o,n,m,l,k,j,i,h,g,f,e,d,c,b,a,a0,a1,a2,a3,a4,a5
 var $async$JF=A.U(function(a7,a8){if(a7===1){o=a8
 s=p}while(true)switch(s){case 0:a4=A.b([],t.V7)
 f=t.a,e=t.j,d=0
-case 3:if(!(d<2)){s=5
+case 3:if(!(d<6)){s=5
 break}n=B.I4[d]
 p=7
 m="https://api.rss2json.com/v1/api.json?rss_url="+A.EG(B.Ix,n,B.a0,!1)
@@ -84513,7 +84513,7 @@ r5(){var s=0,r=A.T(t.H),q=1,p,o=this,n,m,l
 var $async$r5=A.U(function(a,b){if(a===1){p=b
 s=q}while(true)switch(s){case 0:q=3
 s=6
-return A.a4(A.JF(30),$async$r5)
+return A.a4(A.JF(60),$async$r5)
 case 6:n=b
 o.ah(new A.ak5(o,n))
 q=1
@@ -89182,7 +89182,7 @@ B.Gf=new A.cL(984385,!1)
 B.Gv=new A.dz(B.Gf,null,null,null,null)
 B.AZ=new A.lq(B.Gp,B.Gv,"\ub274\uc2a4")
 B.I0=A.b(s([B.B1,B.B0,B.B_,B.B2,B.AZ]),A.ad("v<lq>"))
-B.I4=A.b(s(["https://www.mk.co.kr/rss/40300001/","https://www.sedaily.com/RSS/rss_economy.xml"]),t.s)
+B.I4=A.b(s(["https://www.mk.co.kr/rss/40300001/","https://www.sedaily.com/RSS/rss_economy.xml","https://www.hankyung.com/feed/finance","https://www.edaily.co.kr/rss/rss.xml","https://news.mt.co.kr/mtview/api/rss_economy.xml","https://www.yna.co.kr/rss/economy.xml"]),t.s)
 B.nS=A.b(s(["J","F","M","A","M","J","J","A","S","O","N","D"]),t.s)
 B.nU=A.b(s([0,0,26624,1023,65534,2047,65534,2047]),t.t)
 B.eG=A.b(s([B.db,B.c8,B.fw,B.fx,B.iR]),t.QP)
