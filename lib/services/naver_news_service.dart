@@ -4,8 +4,12 @@ import '../models/stock.dart';
 
 class NaverNewsService {
   static const _rssFeeds = [
-    'https://www.mk.co.kr/rss/40300001/',
-    'https://www.sedaily.com/RSS/rss_economy.xml',
+    'https://www.mk.co.kr/rss/40300001/',         // 매일경제 증권
+    'https://www.sedaily.com/RSS/rss_economy.xml', // 서울경제 경제
+    'https://www.hankyung.com/feed/finance',        // 한국경제 금융
+    'https://www.edaily.co.kr/rss/rss.xml',         // 이데일리
+    'https://news.mt.co.kr/mtview/api/rss_economy.xml', // 머니투데이
+    'https://www.yna.co.kr/rss/economy.xml',        // 연합뉴스 경제
   ];
 
   static const _rss2jsonBase = 'https://api.rss2json.com/v1/api.json';

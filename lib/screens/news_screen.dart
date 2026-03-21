@@ -38,7 +38,7 @@ class _NewsScreenState extends State<NewsScreen> {
 
   Future<void> _fetchNews() async {
     try {
-      final news = await NaverNewsService.fetchStockNews(display: 30);
+      final news = await NaverNewsService.fetchStockNews(display: 60);
       setState(() {
         _news = news
             .where((n) => NewsAnalysisService.analyze(n.title, n.summary).predictions.isNotEmpty)
