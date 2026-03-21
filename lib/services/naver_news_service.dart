@@ -63,13 +63,10 @@ class NaverNewsService {
     String query = '주식 증시',
     int display = 20,
   }) async {
-    final naverUrl =
-        '$_baseUrl?query=${Uri.encodeComponent(query)}&display=$display&sort=date';
-    final proxyUrl = 'https://corsproxy.io/?${Uri.encodeComponent(naverUrl)}';
-    final response = await http.get(Uri.parse(proxyUrl), headers: {
-      'X-Naver-Client-Id': _clientId,
-      'X-Naver-Client-Secret': _clientSecret,
-    });
+    // Vercel serverless function proxy (avoids browser CORS restriction)
+    const proxyBase = 'https://money-flow-haelim-lees-projects.vercel.app/api/news';
+    final proxyUrl = '$proxyBase?query=${Uri.encodeComponent(query)}&display=$display';
+    final response = await http.get(Uri.parse(proxyUrl));
 
     if (response.statusCode != 200) {
       throw Exception('뉴스를 불러오지 못했습니다 (${response.statusCode})');
