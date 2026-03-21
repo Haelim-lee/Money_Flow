@@ -1,11 +1,51 @@
 import 'package:flutter/material.dart';
 import '../data/mock_data.dart';
 
-class NewsScreen extends StatelessWidget {
+class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
 
   @override
+  State<NewsScreen> createState() => _NewsScreenState();
+}
+
+class _NewsScreenState extends State<NewsScreen> {
+  static const int _pageSize = 6;
+  int _loadedCount = _pageSize;
+  bool _isLoading = false;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _loadMore();
+    }
+  }
+
+  Future<void> _loadMore() async {
+    if (_isLoading || _loadedCount >= mockNews.length) return;
+    setState(() => _isLoading = true);
+    await Future.delayed(const Duration(milliseconds: 600));
+    setState(() {
+      _loadedCount = (_loadedCount + _pageSize).clamp(0, mockNews.length);
+      _isLoading = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final visibleNews = mockNews.take(_loadedCount).toList();
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
@@ -16,10 +56,31 @@ class NewsScreen extends StatelessWidget {
         elevation: 0,
       ),
       body: ListView.builder(
+        controller: _scrollController,
         padding: const EdgeInsets.all(16),
-        itemCount: mockNews.length,
+        itemCount: visibleNews.length + 1,
         itemBuilder: (context, index) {
-          final news = mockNews[index];
+          if (index == visibleNews.length) {
+            if (_isLoading) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+              );
+            }
+            if (_loadedCount >= mockNews.length) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Center(
+                  child: Text('모든 뉴스를 불러왔습니다',
+                      style: TextStyle(
+                          color: Colors.grey.shade400, fontSize: 13)),
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          }
+
+          final news = visibleNews[index];
           return Container(
             margin: const EdgeInsets.only(bottom: 12),
             decoration: BoxDecoration(
