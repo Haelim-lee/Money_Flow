@@ -55,12 +55,17 @@ class _ChartScreenState extends State<ChartScreen> {
     final color = stock.isUp ? const Color(0xFFE53935) : const Color(0xFF1E88E5);
     final sign = stock.isUp ? '+' : '';
 
+    final hasChart = stock.chartData.isNotEmpty;
     final spots = stock.chartData.asMap().entries
         .map((e) => FlSpot(e.key.toDouble(), e.value))
         .toList();
 
-    final minY = stock.chartData.reduce((a, b) => a < b ? a : b) * 0.998;
-    final maxY = stock.chartData.reduce((a, b) => a > b ? a : b) * 1.002;
+    final minY = hasChart
+        ? stock.chartData.reduce((a, b) => a < b ? a : b) * 0.998
+        : 0.0;
+    final maxY = hasChart
+        ? stock.chartData.reduce((a, b) => a > b ? a : b) * 1.002
+        : 1.0;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
@@ -120,6 +125,20 @@ class _ChartScreenState extends State<ChartScreen> {
           ),
           const SizedBox(height: 16),
           // 차트 카드
+          if (!hasChart)
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+              ),
+              child: Center(
+                child: Text('차트 데이터 없음',
+                    style: TextStyle(color: Colors.grey.shade400, fontSize: 14)),
+              ),
+            ),
+          if (hasChart)
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -192,9 +211,9 @@ class _ChartScreenState extends State<ChartScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          if (stock.price > 0) const SizedBox(height: 16),
           // 거래 정보
-          Container(
+          if (stock.price > 0) Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white,
