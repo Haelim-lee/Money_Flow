@@ -84434,7 +84434,7 @@ A.Hg.prototype={
 H(a){var s,r,q,p,o,n,m,l=null,k=Date.now(),j=A.auF("MM.dd HH:mm").f1(new A.dX(k,0,!1))
 k=B.c.a4(127.5)
 s=t.p
-r=A.b([new A.c2(B.Fd,A.ax("v1.1.2",l,l,l,l,A.b9(l,l,A.G(k,255,255,255),l,l,l,l,l,l,l,l,11,l,l,l,l,l,!0,l,l,l,l,l,l,l,l),l,l),l)],s)
+r=A.b([new A.c2(B.Fd,A.ax("v1.1.3",l,l,l,l,A.b9(l,l,A.G(k,255,255,255),l,l,l,l,l,l,l,l,11,l,l,l,l,l,!0,l,l,l,l,l,l,l,l),l,l),l)],s)
 k=A.b3(l,A.c0(A.b([B.VT,B.fb,A.db(A.b([this.NB("KOSPI","2,654.23","+1.23%",!0),B.d2,this.NB("KOSDAQ","872.45","-0.45%",!1)],s),B.B,B.t,B.u),B.ik,A.ax(j,l,l,l,l,A.b9(l,l,A.G(k,255,255,255),l,l,l,l,l,l,l,l,11,l,l,l,l,l,!0,l,l,l,l,l,l,l,l),l,l)],s),B.aj,B.u1,B.bv),B.k,l,l,B.Bc,l,l,l,B.Fr,l)
 q=A.ax("\uad00\uc2ec \uc885\ubaa9",l,l,l,l,A.b9(l,l,B.bR,l,l,l,l,l,l,l,l,16,l,l,B.M,l,l,!0,l,l,l,l,l,l,l,l),l,l)
 p=A.bF(16)
