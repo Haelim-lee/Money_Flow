@@ -25,11 +25,13 @@ class NewsItem {
   final String source;
   final String time;
   final String summary;
+  final String link;
 
   const NewsItem({
     required this.title,
     required this.source,
     required this.time,
     required this.summary,
+    this.link = '',
   });
 }

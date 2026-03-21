@@ -70,11 +70,13 @@ class NaverNewsService {
         final items = data['items'] as List<dynamic>;
         for (final item in items) {
           final map = item as Map<String, dynamic>;
+          final link = map['link'] as String? ?? '';
           allItems.add(NewsItem(
             title: _stripHtml(map['title'] as String? ?? ''),
-            source: _extractSource(map['link'] as String? ?? ''),
+            source: _extractSource(link),
             time: _relativeTime(map['pubDate'] as String? ?? ''),
             summary: _stripHtml(map['description'] as String? ?? ''),
+            link: link,
           ));
         }
       } catch (_) {

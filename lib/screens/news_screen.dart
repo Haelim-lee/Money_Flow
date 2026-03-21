@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../data/mock_data.dart';
 import '../models/stock.dart';
 import '../services/naver_news_service.dart';
@@ -163,7 +164,8 @@ class _NewsCard extends StatelessWidget {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () => _showDetail(context, news.title, news.summary),
+        onTap: () =>
+            _showDetail(context, news.title, news.summary, news.link),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -211,7 +213,8 @@ class _NewsCard extends StatelessWidget {
     );
   }
 
-  void _showDetail(BuildContext context, String title, String summary) {
+  void _showDetail(
+      BuildContext context, String title, String summary, String link) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -249,6 +252,29 @@ class _NewsCard extends StatelessWidget {
                     color: Colors.grey.shade700,
                     fontSize: 15,
                     height: 1.6)),
+            const SizedBox(height: 20),
+            if (link.isNotEmpty)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () async {
+                    final uri = Uri.parse(link);
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri,
+                          mode: LaunchMode.externalApplication);
+                    }
+                  },
+                  icon: const Icon(Icons.open_in_new, size: 18),
+                  label: const Text('원문 보기'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF1A1A2E),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ),
             const SizedBox(height: 24),
           ],
         ),
