@@ -40,12 +40,16 @@ class _NewsScreenState extends State<NewsScreen> {
     try {
       final news = await NaverNewsService.fetchStockNews(display: 30);
       setState(() {
-        _news = news;
+        _news = news
+            .where((n) => NewsAnalysisService.analyze(n.title, n.summary).predictions.isNotEmpty)
+            .toList();
         _isInitialLoading = false;
       });
     } catch (e) {
       setState(() {
-        _news = mockNews;
+        _news = mockNews
+            .where((n) => NewsAnalysisService.analyze(n.title, n.summary).predictions.isNotEmpty)
+            .toList();
         _isInitialLoading = false;
         _error = '실시간 뉴스 로드 실패 — 샘플 데이터를 표시합니다';
       });
