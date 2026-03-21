@@ -17,10 +17,22 @@ class DashboardScreen extends StatelessWidget {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 140,
+            expandedHeight: 160,
             floating: false,
             pinned: true,
             backgroundColor: const Color(0xFF1A1A2E),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 16, top: 8),
+                child: Text(
+                  'v1.1.0',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.5),
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               collapseMode: CollapseMode.pin,
               background: Container(
@@ -31,7 +43,7 @@ class DashboardScreen extends StatelessWidget {
                     colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
                   ),
                 ),
-                padding: const EdgeInsets.fromLTRB(20, 56, 20, 12),
+                padding: const EdgeInsets.fromLTRB(20, 60, 20, 14),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -42,15 +54,15 @@ class DashboardScreen extends StatelessWidget {
                             color: Colors.white,
                             fontSize: 22,
                             fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 6),
-                    Wrap(
-                      spacing: 8,
+                    const SizedBox(height: 8),
+                    Row(
                       children: [
                         _indexBadge('KOSPI', '2,654.23', '+1.23%', true),
+                        const SizedBox(width: 8),
                         _indexBadge('KOSDAQ', '872.45', '-0.45%', false),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Text(timeStr,
                         style: TextStyle(
                             color: Colors.white.withOpacity(0.5), fontSize: 11)),
