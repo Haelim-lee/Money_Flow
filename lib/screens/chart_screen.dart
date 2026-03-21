@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import '../models/stock.dart';
+import '../services/naver_news_service.dart';
+import '../data/mock_data.dart';
 
 class ChartScreen extends StatefulWidget {
   final Stock stock;
@@ -15,6 +17,36 @@ class ChartScreen extends StatefulWidget {
 class _ChartScreenState extends State<ChartScreen> {
   int _selectedPeriod = 0;
   final List<String> _periods = ['1일', '1주', '1개월', '3개월', '1년'];
+
+  List<NewsItem> _relatedNews = [];
+  bool _newsLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRelatedNews();
+  }
+
+  Future<void> _loadRelatedNews() async {
+    try {
+      final all = await NaverNewsService.fetchStockNews(display: 30);
+      final name = widget.stock.name;
+      final filtered = all.where((n) =>
+          n.title.contains(name) || n.summary.contains(name)).toList();
+      setState(() {
+        _relatedNews = filtered.isNotEmpty ? filtered : all.take(3).toList();
+        _newsLoading = false;
+      });
+    } catch (_) {
+      final name = widget.stock.name;
+      final filtered = mockNews.where((n) =>
+          n.title.contains(name) || n.summary.contains(name)).toList();
+      setState(() {
+        _relatedNews = filtered.isNotEmpty ? filtered : mockNews.take(3).toList();
+        _newsLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +132,6 @@ class _ChartScreenState extends State<ChartScreen> {
             ),
             child: Column(
               children: [
-                // 기간 선택
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: _periods.asMap().entries.map((e) {
@@ -189,6 +220,20 @@ class _ChartScreenState extends State<ChartScreen> {
               ],
             ),
           ),
+          const SizedBox(height: 16),
+          // 관련 뉴스
+          const Text('관련 뉴스',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          const SizedBox(height: 10),
+          if (_newsLoading)
+            const Center(
+                child: Padding(
+              padding: EdgeInsets.all(16),
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ))
+          else
+            ..._relatedNews.map((news) => _NewsItem(news: news)),
+          const SizedBox(height: 24),
         ],
       ),
     );
@@ -205,6 +250,68 @@ class _ChartScreenState extends State<ChartScreen> {
           Text(value,
               style: const TextStyle(
                   fontWeight: FontWeight.w600, fontSize: 14)),
+        ],
+      ),
+    );
+  }
+}
+
+class _NewsItem extends StatelessWidget {
+  final NewsItem news;
+  const _NewsItem({required this.news});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8)
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1A1A2E).withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Text(news.source,
+                    style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1A1A2E))),
+              ),
+              const SizedBox(width: 8),
+              Text(news.time,
+                  style:
+                      TextStyle(color: Colors.grey.shade400, fontSize: 11)),
+            ],
+          ),
+          const SizedBox(height: 7),
+          Text(news.title,
+              style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  height: 1.4)),
+          if (news.summary.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(news.summary,
+                style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: 12,
+                    height: 1.4),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis),
+          ],
         ],
       ),
     );

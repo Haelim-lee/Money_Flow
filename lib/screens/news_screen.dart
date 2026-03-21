@@ -4,6 +4,7 @@ import '../data/mock_data.dart';
 import '../models/stock.dart';
 import '../services/naver_news_service.dart';
 import '../services/news_analysis_service.dart';
+import 'chart_screen.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -152,57 +153,85 @@ class _StockPredictionTile extends StatelessWidget {
   final StockPrediction prediction;
   const _StockPredictionTile({required this.prediction});
 
+  void _navigateToStock(BuildContext context) {
+    // Find stock in mockStocks or create a minimal one
+    final existing = [...mockStocks, ...mockHotStocks]
+        .where((s) => s.symbol == prediction.symbol)
+        .firstOrNull;
+
+    final stock = existing ??
+        Stock(
+          symbol: prediction.symbol,
+          name: prediction.name,
+          price: 0,
+          change: 0,
+          changePercent: 0,
+          volume: 0,
+          chartData: const [],
+        );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => ChartScreen(stock: stock)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final color = prediction.isUp ? const Color(0xFFE53935) : const Color(0xFF1565C0);
     final icon = prediction.isUp ? Icons.trending_up : Icons.trending_down;
     final label = prediction.isUp ? '상승 예상' : '하락 예상';
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.2)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(8),
+    return GestureDetector(
+      onTap: () => _navigateToStock(context),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withOpacity(0.2)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, color: color, size: 18),
             ),
-            child: Icon(icon, color: color, size: 18),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(prediction.name,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 14)),
-                Text(prediction.reason,
-                    style: TextStyle(
-                        color: Colors.grey.shade600, fontSize: 12)),
-              ],
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(prediction.name,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 14)),
+                  Text(prediction.reason,
+                      style: TextStyle(
+                          color: Colors.grey.shade600, fontSize: 12)),
+                ],
+              ),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(20),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(label,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold)),
             ),
-            child: Text(label,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold)),
-          ),
-        ],
+            const SizedBox(width: 6),
+            Icon(Icons.chevron_right, color: color.withOpacity(0.5), size: 18),
+          ],
+        ),
       ),
     );
   }
