@@ -240,6 +240,9 @@ class _ChartScreenState extends State<ChartScreen> {
             ),
           ),
           const SizedBox(height: 16),
+          // 외인/기관 동향
+          if (stock.price > 0) _InstitutionalFlow(stock: stock),
+          const SizedBox(height: 16),
           // 관련 뉴스
           const Text('관련 뉴스',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
@@ -271,6 +274,134 @@ class _ChartScreenState extends State<ChartScreen> {
                   fontWeight: FontWeight.w600, fontSize: 14)),
         ],
       ),
+    );
+  }
+}
+
+class _InstitutionalFlow extends StatelessWidget {
+  final Stock stock;
+  const _InstitutionalFlow({required this.stock});
+
+  // Mock data based on stock symbol seed
+  int _mockValue(String symbol, int base) {
+    final seed = symbol.codeUnits.fold(0, (a, b) => a + b);
+    final val = (seed * base) % 8000 - 4000;
+    return val;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final formatter = NumberFormat('#,###');
+    final foreignNet = _mockValue(stock.symbol, 137);
+    final institutionNet = _mockValue(stock.symbol, 251);
+    final retailNet = -(foreignNet + institutionNet);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text('외인/기관 동향',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade50,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text('MOCK',
+                    style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.orange.shade700,
+                        fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text('KIS API 연동 후 실시간 제공 예정',
+              style: TextStyle(color: Colors.grey.shade400, fontSize: 11)),
+          const SizedBox(height: 14),
+          _flowRow('외국인', foreignNet, formatter),
+          const SizedBox(height: 10),
+          _flowRow('기관', institutionNet, formatter),
+          const SizedBox(height: 10),
+          _flowRow('개인', retailNet, formatter),
+        ],
+      ),
+    );
+  }
+
+  Widget _flowRow(String label, int net, NumberFormat formatter) {
+    final isPositive = net >= 0;
+    final color = isPositive ? const Color(0xFFE53935) : const Color(0xFF1E88E5);
+    final sign = isPositive ? '+' : '';
+    final dirLabel = isPositive ? '순매수' : '순매도';
+    final barWidth = (net.abs() / 8000).clamp(0.0, 1.0);
+
+    // Mock buy/sell breakdown
+    final buyAmt = net.abs() + 1200;
+    final sellAmt = isPositive ? 1200 : net.abs() + 1200;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(label,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w600, fontSize: 13)),
+            const SizedBox(width: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(dirLabel,
+                  style: TextStyle(
+                      color: color,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold)),
+            ),
+            const Spacer(),
+            Text('$sign${formatter.format(net)}백만',
+                style: TextStyle(
+                    color: color,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13)),
+          ],
+        ),
+        const SizedBox(height: 4),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: barWidth,
+            backgroundColor: Colors.grey.shade100,
+            valueColor: AlwaysStoppedAnimation<Color>(color.withOpacity(0.6)),
+            minHeight: 6,
+          ),
+        ),
+        const SizedBox(height: 3),
+        Row(
+          children: [
+            Text('매수 ${formatter.format(buyAmt)}백만',
+                style: TextStyle(color: Colors.red.shade300, fontSize: 10)),
+            const SizedBox(width: 10),
+            Text('매도 ${formatter.format(sellAmt)}백만',
+                style: TextStyle(color: Colors.blue.shade300, fontSize: 10)),
+          ],
+        ),
+      ],
     );
   }
 }
