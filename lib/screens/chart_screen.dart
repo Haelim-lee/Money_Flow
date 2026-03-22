@@ -240,6 +240,9 @@ class _ChartScreenState extends State<ChartScreen> {
             ),
           ),
           const SizedBox(height: 16),
+          // 기술적 분석
+          if (stock.price > 0) _TechnicalAnalysis(stock: stock),
+          const SizedBox(height: 16),
           // 외인/기관 동향
           if (stock.price > 0) _InstitutionalFlow(stock: stock),
           const SizedBox(height: 16),
@@ -274,6 +277,390 @@ class _ChartScreenState extends State<ChartScreen> {
                   fontWeight: FontWeight.w600, fontSize: 14)),
         ],
       ),
+    );
+  }
+}
+
+class _TechnicalAnalysis extends StatelessWidget {
+  final Stock stock;
+  const _TechnicalAnalysis({required this.stock});
+
+  // RSI calculation from chartData (simplified)
+  double _calcRsi() {
+    final data = stock.chartData;
+    if (data.length < 2) return 50;
+    double gains = 0, losses = 0;
+    for (int i = 1; i < data.length; i++) {
+      final diff = data[i] - data[i - 1];
+      if (diff > 0) gains += diff;
+      else losses += diff.abs();
+    }
+    if (losses == 0) return 100;
+    final rs = gains / losses;
+    return 100 - (100 / (1 + rs));
+  }
+
+  // MACD signal: compare short vs long moving average
+  String _macdSignal() {
+    final data = stock.chartData;
+    if (data.length < 4) return '중립';
+    final shortMA = data.sublist(data.length - 2).reduce((a, b) => a + b) / 2;
+    final longMA = data.reduce((a, b) => a + b) / data.length;
+    if (shortMA > longMA * 1.002) return '골든크로스';
+    if (shortMA < longMA * 0.998) return '데드크로스';
+    return '중립';
+  }
+
+  // Bollinger Band position
+  String _bollingerPosition() {
+    final data = stock.chartData;
+    if (data.isEmpty) return '중간';
+    final avg = data.reduce((a, b) => a + b) / data.length;
+    final current = data.last;
+    if (current > avg * 1.015) return '상단 (과매수)';
+    if (current < avg * 0.985) return '하단 (과매도)';
+    return '중간';
+  }
+
+  String _overallSignal(double rsi, String macd) {
+    int score = 0;
+    if (rsi < 35) score += 2;
+    else if (rsi < 50) score += 1;
+    else if (rsi > 65) score -= 2;
+    else if (rsi > 50) score -= 1;
+    if (macd == '골든크로스') score += 2;
+    if (macd == '데드크로스') score -= 2;
+    if (stock.isUp) score += 1;
+    if (score >= 3) return '강력 매수';
+    if (score >= 1) return '매수';
+    if (score <= -3) return '강력 매도';
+    if (score <= -1) return '매도';
+    return '중립 관망';
+  }
+
+  String _timePrediction(double rsi, String macd) {
+    if (rsi < 35 && macd == '골든크로스') return '단기 반등 가능 — 오늘 중 상승 시도 예상';
+    if (rsi > 65 && macd == '데드크로스') return '단기 고점 가능 — 오후 조정 주의';
+    if (rsi < 40) return '과매도 구간 — 수시간 내 반등 시도 가능';
+    if (rsi > 60) return '과매수 구간 — 추가 상승 시 차익 실현 압력';
+    if (macd == '골든크로스') return '상승 모멘텀 형성 — 내일 장 초반 강세 가능';
+    if (macd == '데드크로스') return '하락 압력 지속 — 추가 조정 가능성';
+    return '뚜렷한 방향성 없음 — 관망 권장';
+  }
+
+  // Returns mock time zone predictions based on indicators
+  Map<String, dynamic> _timeZones(double rsi, String macd) {
+    // Determine pattern
+    if (rsi < 35 && macd == '골든크로스') {
+      return {
+        'rise': ['09:20 ~ 10:00', '13:00 ~ 14:00'],
+        'fall': ['10:00 ~ 10:30'],
+        'peak': '13:30 ~ 14:00',
+        'note': '장 초반 강세 후 잠시 눌림, 오후 재상승 패턴',
+      };
+    }
+    if (rsi > 65 && macd == '데드크로스') {
+      return {
+        'rise': ['09:00 ~ 09:20'],
+        'fall': ['09:30 ~ 11:00', '14:00 ~ 15:20'],
+        'peak': '09:10 ~ 09:20 (이미 고점 가능성)',
+        'note': '장 초반 매도 압력 강함, 오후 추가 하락 주의',
+      };
+    }
+    if (rsi < 40) {
+      return {
+        'rise': ['10:30 ~ 11:30', '14:30 ~ 15:20'],
+        'fall': ['09:00 ~ 10:00'],
+        'peak': '15:00 ~ 15:20',
+        'note': '저가 매수세 오전 후반~오후 유입 가능성',
+      };
+    }
+    if (rsi > 60) {
+      return {
+        'rise': ['09:00 ~ 09:30'],
+        'fall': ['10:00 ~ 12:00'],
+        'peak': '09:20 ~ 09:40',
+        'note': '차익 실현 매물 오전 중반 집중 예상',
+      };
+    }
+    if (macd == '골든크로스') {
+      return {
+        'rise': ['09:10 ~ 10:00', '14:00 ~ 15:00'],
+        'fall': ['11:00 ~ 13:00'],
+        'peak': '14:30 ~ 15:00',
+        'note': '오전 급등 후 점심 눌림, 오후 2차 상승 패턴',
+      };
+    }
+    if (macd == '데드크로스') {
+      return {
+        'rise': ['12:00 ~ 13:00'],
+        'fall': ['09:30 ~ 11:30', '14:30 ~ 15:20'],
+        'peak': '없음 (하락 추세)',
+        'note': '점심 전후 기술적 반등 외 추세적 하락',
+      };
+    }
+    return {
+      'rise': ['특정 시간대 없음'],
+      'fall': ['특정 시간대 없음'],
+      'peak': '불명확',
+      'note': '뚜렷한 패턴 없음 — 관망 권장',
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final rsi = _calcRsi();
+    final macd = _macdSignal();
+    final bollinger = _bollingerPosition();
+    final signal = _overallSignal(rsi, macd);
+    final timePred = _timePrediction(rsi, macd);
+
+    final signalColor = signal.contains('매수')
+        ? const Color(0xFFE53935)
+        : signal.contains('매도')
+            ? const Color(0xFF1E88E5)
+            : Colors.orange;
+
+    final rsiColor = rsi < 35
+        ? const Color(0xFF1E88E5)
+        : rsi > 65
+            ? const Color(0xFFE53935)
+            : Colors.green;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text('기술적 분석',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade50,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text('MOCK',
+                    style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.orange.shade700,
+                        fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+
+          // 종합 신호
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            decoration: BoxDecoration(
+              color: signalColor.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: signalColor.withOpacity(0.3)),
+            ),
+            child: Column(
+              children: [
+                Text(signal,
+                    style: TextStyle(
+                        color: signalColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18)),
+                const SizedBox(height: 4),
+                Text(timePred,
+                    style: TextStyle(
+                        color: Colors.grey.shade600, fontSize: 12),
+                    textAlign: TextAlign.center),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+
+          // RSI
+          _indicatorRow(
+            'RSI',
+            '${rsi.toStringAsFixed(1)}',
+            rsi < 35 ? '과매도 — 반등 가능' : rsi > 65 ? '과매수 — 조정 주의' : '중립',
+            rsiColor,
+          ),
+          const SizedBox(height: 4),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: rsi / 100,
+              backgroundColor: Colors.grey.shade100,
+              valueColor: AlwaysStoppedAnimation<Color>(rsiColor.withOpacity(0.7)),
+              minHeight: 6,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // MACD
+          _indicatorRow(
+            'MACD',
+            macd,
+            macd == '골든크로스'
+                ? '단기 상승 모멘텀'
+                : macd == '데드크로스'
+                    ? '단기 하락 압력'
+                    : '방향 미정',
+            macd == '골든크로스'
+                ? const Color(0xFFE53935)
+                : macd == '데드크로스'
+                    ? const Color(0xFF1E88E5)
+                    : Colors.grey,
+          ),
+          const SizedBox(height: 12),
+
+          // 볼린저밴드
+          _indicatorRow(
+            '볼린저밴드',
+            bollinger,
+            bollinger.contains('상단')
+                ? '저항선 근접'
+                : bollinger.contains('하단')
+                    ? '지지선 근접, 반등 가능'
+                    : '안정 구간',
+            bollinger.contains('상단')
+                ? const Color(0xFFE53935)
+                : bollinger.contains('하단')
+                    ? const Color(0xFF1E88E5)
+                    : Colors.green,
+          ),
+          const SizedBox(height: 16),
+          const Divider(height: 1),
+          const SizedBox(height: 14),
+
+          // 시간대 예측
+          Row(
+            children: [
+              const Text('시간대 예측',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                decoration: BoxDecoration(
+                  color: Colors.purple.shade50,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text('MOCK',
+                    style: TextStyle(
+                        fontSize: 9,
+                        color: Colors.purple.shade400,
+                        fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Builder(builder: (_) {
+            final zones = _timeZones(rsi, macd);
+            final riseZones = zones['rise'] as List<String>;
+            final fallZones = zones['fall'] as List<String>;
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _timeZoneRow('상승 예상', riseZones, const Color(0xFFE53935)),
+                const SizedBox(height: 8),
+                _timeZoneRow('하락 예상', fallZones, const Color(0xFF1E88E5)),
+                const SizedBox(height: 8),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('고점 예상  ',
+                        style: TextStyle(
+                            color: Colors.grey.shade500, fontSize: 12)),
+                    Expanded(
+                      child: Text(zones['peak'] as String,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 12)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(zones['note'] as String,
+                      style: TextStyle(
+                          color: Colors.grey.shade600, fontSize: 11)),
+                ),
+              ],
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _timeZoneRow(String label, List<String> zones, Color color) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('$label  ',
+            style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+        Expanded(
+          child: Wrap(
+            spacing: 6,
+            runSpacing: 4,
+            children: zones.map((z) => Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: color.withOpacity(0.2)),
+              ),
+              child: Text(z,
+                  style: TextStyle(
+                      color: color,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600)),
+            )).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _indicatorRow(String label, String value, String desc, Color color) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 80,
+          child: Text(label,
+              style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Text(value,
+              style: TextStyle(
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12)),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(desc,
+              style: TextStyle(color: Colors.grey.shade500, fontSize: 11)),
+        ),
+      ],
     );
   }
 }
