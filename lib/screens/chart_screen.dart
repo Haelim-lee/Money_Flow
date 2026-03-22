@@ -285,6 +285,90 @@ class _TechnicalAnalysis extends StatelessWidget {
   final Stock stock;
   const _TechnicalAnalysis({required this.stock});
 
+  // Returns sell date recommendations
+  Map<String, dynamic> _sellDates(double rsi, String macd) {
+    final now = DateTime.now();
+    String fmt(DateTime d) {
+      final weekdays = ['월', '화', '수', '목', '금', '토', '일'];
+      return '${d.month}/${d.day}(${weekdays[d.weekday - 1]})';
+    }
+
+    // Skip weekends
+    DateTime addWeekdays(DateTime base, int days) {
+      var d = base;
+      var added = 0;
+      while (added < days) {
+        d = d.add(const Duration(days: 1));
+        if (d.weekday != DateTime.saturday && d.weekday != DateTime.sunday) {
+          added++;
+        }
+      }
+      return d;
+    }
+
+    if (rsi < 35 && macd == '골든크로스') {
+      final shortSell = addWeekdays(now, 1);
+      final longSell = addWeekdays(now, 10);
+      return {
+        'short': '${fmt(shortSell)} ~ ${fmt(addWeekdays(now, 2))} (내일~모레)',
+        'shortReason': '과매도 반등 구간 — 단기 반등 목표가 도달 시 분할 매도',
+        'long': '${fmt(longSell)} ~ ${fmt(addWeekdays(now, 15))} (2~3주 후)',
+        'longReason': '골든크로스 추세 지속 시 추가 상승 기대 — 고점 확인 후 매도',
+      };
+    }
+    if (rsi > 65 && macd == '데드크로스') {
+      return {
+        'short': '오늘 장 마감 전 (15:00 이전)',
+        'shortReason': '과매수 + 데드크로스 — 지금이 고점에 가까울 가능성, 빠른 매도 권장',
+        'long': '보유 자제 — 추가 하락 시 손절 고려',
+        'longReason': '하락 추세 진입 가능성 높음, 장기 보유 시 손실 확대 위험',
+      };
+    }
+    if (rsi < 40) {
+      final shortSell = addWeekdays(now, 2);
+      final longSell = addWeekdays(now, 15);
+      return {
+        'short': '${fmt(shortSell)} ~ ${fmt(addWeekdays(now, 4))} (3~5일 후)',
+        'shortReason': '저가 매수 후 단기 반등 시 매도 — 목표 수익률 도달 기준',
+        'long': '${fmt(longSell)} ~ ${fmt(addWeekdays(now, 20))} (3~4주 후)',
+        'longReason': '추세 전환 확인 후 보유 — RSI 60 도달 시 분할 매도',
+      };
+    }
+    if (rsi > 60) {
+      final shortSell = addWeekdays(now, 1);
+      return {
+        'short': '${fmt(shortSell)} (내일 오전 중)',
+        'shortReason': '과매수 근접 — 추가 상승 시 차익 실현 타이밍',
+        'long': '${fmt(addWeekdays(now, 5))} ~ ${fmt(addWeekdays(now, 8))} (1~2주 내)',
+        'longReason': 'RSI 70 이상 진입 시 과매수 확정 — 단계적 매도 권장',
+      };
+    }
+    if (macd == '골든크로스') {
+      final longSell = addWeekdays(now, 10);
+      return {
+        'short': '${fmt(addWeekdays(now, 2))} ~ ${fmt(addWeekdays(now, 3))} (이번 주 내)',
+        'shortReason': '상승 모멘텀 초기 — 단기 목표가 도달 시 일부 매도',
+        'long': '${fmt(longSell)} ~ ${fmt(addWeekdays(now, 20))} (2~4주 후)',
+        'longReason': '골든크로스 추세 유지 구간 — RSI 과매수 진입 전후 분할 매도',
+      };
+    }
+    if (macd == '데드크로스') {
+      return {
+        'short': '오늘 ~ ${fmt(addWeekdays(now, 1))} (가능한 빨리)',
+        'shortReason': '하락 압력 지속 — 추가 손실 방지를 위해 조기 매도 고려',
+        'long': '추세 전환 신호 확인 전 보유 자제',
+        'longReason': '데드크로스 이후 추세 반전까지 시간 필요, 반등 시 매도 기회',
+      };
+    }
+    final mid = addWeekdays(now, 5);
+    return {
+      'short': '${fmt(addWeekdays(now, 3))} ~ ${fmt(mid)} (다음 주)',
+      'shortReason': '뚜렷한 신호 없음 — 목표 수익률 설정 후 기계적 매도 권장',
+      'long': '${fmt(addWeekdays(now, 15))} ~ ${fmt(addWeekdays(now, 25))} (3~5주 후)',
+      'longReason': '지표 변화 모니터링 — 추세 형성 확인 후 재판단',
+    };
+  }
+
   // RSI calculation from chartData (simplified)
   double _calcRsi() {
     final data = stock.chartData;
@@ -641,6 +725,98 @@ class _TechnicalAnalysis extends StatelessWidget {
               ],
             );
           }),
+          const SizedBox(height: 16),
+          const Divider(height: 1),
+          const SizedBox(height: 14),
+
+          // 매도 권장 시점
+          Row(
+            children: [
+              const Text('매도 권장 시점',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade50,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text('MOCK',
+                    style: TextStyle(
+                        fontSize: 9,
+                        color: Colors.orange.shade700,
+                        fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Builder(builder: (_) {
+            final sell = _sellDates(rsi, macd);
+            return Column(
+              children: [
+                _sellDateCard(
+                  '단기',
+                  sell['short'] as String,
+                  sell['shortReason'] as String,
+                  const Color(0xFFE53935),
+                ),
+                const SizedBox(height: 8),
+                _sellDateCard(
+                  '장기',
+                  sell['long'] as String,
+                  sell['longReason'] as String,
+                  const Color(0xFF6D4C41),
+                ),
+              ],
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _sellDateCard(String label, String date, String reason, Color color) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Text(label,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold)),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(date,
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        color: color)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(reason,
+              style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontSize: 11,
+                  height: 1.5)),
         ],
       ),
     );
