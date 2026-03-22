@@ -357,6 +357,7 @@ class _TechnicalAnalysis extends StatelessWidget {
         'fall': ['10:00 ~ 10:30'],
         'peak': '13:30 ~ 14:00',
         'note': '장 초반 강세 후 잠시 눌림, 오후 재상승 패턴',
+        'reason': 'RSI ${rsi.toStringAsFixed(0)} → 과매도 상태라 저가 매수세 유입 가능성이 높고, MACD 골든크로스로 단기 상승 모멘텀이 형성됨. 이 조합에서 장 초반 급등 후 차익 실현 눌림, 오후 재매수 패턴이 자주 관찰됨.',
       };
     }
     if (rsi > 65 && macd == '데드크로스') {
@@ -365,6 +366,7 @@ class _TechnicalAnalysis extends StatelessWidget {
         'fall': ['09:30 ~ 11:00', '14:00 ~ 15:20'],
         'peak': '09:10 ~ 09:20 (이미 고점 가능성)',
         'note': '장 초반 매도 압력 강함, 오후 추가 하락 주의',
+        'reason': 'RSI ${rsi.toStringAsFixed(0)} → 과매수 구간으로 차익 실현 압력이 크고, MACD 데드크로스로 단기 하락 모멘텀 진입. 이 조합은 장 초반 소폭 반등 후 매도세가 몰리는 패턴이 많음.',
       };
     }
     if (rsi < 40) {
@@ -373,6 +375,7 @@ class _TechnicalAnalysis extends StatelessWidget {
         'fall': ['09:00 ~ 10:00'],
         'peak': '15:00 ~ 15:20',
         'note': '저가 매수세 오전 후반~오후 유입 가능성',
+        'reason': 'RSI ${rsi.toStringAsFixed(0)} → 과매도 근접 구간. 장 초반 매도 잔여 물량 소화 후 오전 후반부터 저가 매수세 유입이 기대됨. 오후 장 마감 전 수급 집중 패턴.',
       };
     }
     if (rsi > 60) {
@@ -381,6 +384,7 @@ class _TechnicalAnalysis extends StatelessWidget {
         'fall': ['10:00 ~ 12:00'],
         'peak': '09:20 ~ 09:40',
         'note': '차익 실현 매물 오전 중반 집중 예상',
+        'reason': 'RSI ${rsi.toStringAsFixed(0)} → 과매수 근접 구간. 장 초반 추가 상승 시도 후 오전 중반부터 차익 실현 매물이 쌓이는 흐름. 고점 이후 추가 매수는 위험.',
       };
     }
     if (macd == '골든크로스') {
@@ -389,6 +393,7 @@ class _TechnicalAnalysis extends StatelessWidget {
         'fall': ['11:00 ~ 13:00'],
         'peak': '14:30 ~ 15:00',
         'note': '오전 급등 후 점심 눌림, 오후 2차 상승 패턴',
+        'reason': 'MACD 골든크로스 → 단기 이동평균이 장기 이동평균을 상향 돌파해 상승 모멘텀 형성. RSI는 중립권이라 과매수 부담 없음. 전형적인 오전 강세 → 점심 눌림 → 오후 재상승 패턴.',
       };
     }
     if (macd == '데드크로스') {
@@ -397,6 +402,7 @@ class _TechnicalAnalysis extends StatelessWidget {
         'fall': ['09:30 ~ 11:30', '14:30 ~ 15:20'],
         'peak': '없음 (하락 추세)',
         'note': '점심 전후 기술적 반등 외 추세적 하락',
+        'reason': 'MACD 데드크로스 → 단기 이동평균이 장기 이동평균 하향 돌파해 하락 압력 지속. 점심 전후 짧은 기술적 반등 가능하나 추세 전환 신호 없으면 매도 관점 유지 권장.',
       };
     }
     return {
@@ -404,6 +410,7 @@ class _TechnicalAnalysis extends StatelessWidget {
       'fall': ['특정 시간대 없음'],
       'peak': '불명확',
       'note': '뚜렷한 패턴 없음 — 관망 권장',
+      'reason': 'RSI ${rsi.toStringAsFixed(0)}이 중립권이고 MACD도 뚜렷한 방향성이 없어 특정 시간대를 예측하기 어려운 상태.',
     };
   }
 
@@ -597,6 +604,39 @@ class _TechnicalAnalysis extends StatelessWidget {
                   child: Text(zones['note'] as String,
                       style: TextStyle(
                           color: Colors.grey.shade600, fontSize: 11)),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.blue.shade100),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.info_outline,
+                              size: 13, color: Colors.blue.shade600),
+                          const SizedBox(width: 4),
+                          Text('예측 근거',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11,
+                                  color: Colors.blue.shade700)),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(zones['reason'] as String,
+                          style: TextStyle(
+                              color: Colors.blue.shade900,
+                              fontSize: 11,
+                              height: 1.6)),
+                    ],
+                  ),
                 ),
               ],
             );
