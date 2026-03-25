@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import '../models/stock.dart';
 import '../services/naver_news_service.dart';
+import '../services/kis_service.dart';
 import '../data/mock_data.dart';
 
 class ChartScreen extends StatefulWidget {
@@ -21,10 +22,40 @@ class _ChartScreenState extends State<ChartScreen> {
   List<NewsItem> _relatedNews = [];
   bool _newsLoading = true;
 
+  // 실시간 데이터
+  late Stock _stock;
+  bool _priceLoading = true;
+  List<double> _chartData = [];
+
   @override
   void initState() {
     super.initState();
+    _stock = widget.stock;
+    _chartData = widget.stock.chartData;
     _loadRelatedNews();
+    _loadRealTimeData();
+  }
+
+  Future<void> _loadRealTimeData() async {
+    if (widget.stock.symbol.isEmpty) return;
+    final priceData = await KisService.getStockPrice(widget.stock.symbol);
+    final chartData = await KisService.getChartData(widget.stock.symbol);
+    if (!mounted) return;
+    setState(() {
+      if (priceData != null) {
+        _stock = Stock(
+          symbol: widget.stock.symbol,
+          name: widget.stock.name,
+          price: priceData['price'],
+          change: priceData['change'],
+          changePercent: priceData['changePercent'],
+          volume: priceData['volume'],
+          chartData: chartData.isNotEmpty ? chartData : widget.stock.chartData,
+        );
+        _chartData = _stock.chartData;
+      }
+      _priceLoading = false;
+    });
   }
 
   Future<void> _loadRelatedNews() async {
@@ -50,28 +81,39 @@ class _ChartScreenState extends State<ChartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final stock = widget.stock;
+    final stock = _stock;
     final formatter = NumberFormat('#,###');
     final color = stock.isUp ? const Color(0xFFE53935) : const Color(0xFF1E88E5);
     final sign = stock.isUp ? '+' : '';
 
-    final hasChart = stock.chartData.isNotEmpty;
-    final spots = stock.chartData.asMap().entries
+    final hasChart = _chartData.isNotEmpty;
+    final spots = _chartData.asMap().entries
         .map((e) => FlSpot(e.key.toDouble(), e.value))
         .toList();
 
     final minY = hasChart
-        ? stock.chartData.reduce((a, b) => a < b ? a : b) * 0.998
+        ? _chartData.reduce((a, b) => a < b ? a : b) * 0.998
         : 0.0;
     final maxY = hasChart
-        ? stock.chartData.reduce((a, b) => a > b ? a : b) * 1.002
+        ? _chartData.reduce((a, b) => a > b ? a : b) * 1.002
         : 1.0;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: Text(stock.name,
-            style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Row(
+          children: [
+            Text(stock.name,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+            if (_priceLoading) ...[
+              const SizedBox(width: 10),
+              const SizedBox(
+                width: 14, height: 14,
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.grey),
+              ),
+            ],
+          ],
+        ),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 0,

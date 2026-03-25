@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../data/mock_data.dart';
 import '../models/recommendation.dart';
 import '../services/discord_notification_service.dart';
+import '../services/kis_service.dart';
 import '../widgets/stock_card.dart';
 import 'chart_screen.dart';
 
@@ -18,16 +19,46 @@ class _DashboardScreenState extends State<DashboardScreen>
   late TabController _tabController;
   bool _alertSending = false;
 
+  // 실시간 지수
+  String _kospiVal = '2,654.23';
+  String _kospiChg = '+1.23%';
+  bool _kospiUp = true;
+  String _kosdaqVal = '872.45';
+  String _kosdaqChg = '-0.45%';
+  bool _kosdaqUp = false;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _loadMarketIndex();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadMarketIndex() async {
+    final fmt = NumberFormat('#,##0.00');
+    final kospi = await KisService.getMarketIndex('0001');
+    final kosdaq = await KisService.getMarketIndex('1001');
+    if (!mounted) return;
+    setState(() {
+      if (kospi != null) {
+        _kospiVal = fmt.format(kospi['value']);
+        final sign = kospi['isUp'] ? '+' : '';
+        _kospiChg = '$sign${(kospi['changePercent'] as double).toStringAsFixed(2)}%';
+        _kospiUp = kospi['isUp'];
+      }
+      if (kosdaq != null) {
+        _kosdaqVal = fmt.format(kosdaq['value']);
+        final sign = kosdaq['isUp'] ? '+' : '';
+        _kosdaqChg = '$sign${(kosdaq['changePercent'] as double).toStringAsFixed(2)}%';
+        _kosdaqUp = kosdaq['isUp'];
+      }
+    });
   }
 
   void _showAlertSheet(BuildContext context) {
@@ -98,7 +129,7 @@ class _DashboardScreenState extends State<DashboardScreen>
               Padding(
                 padding: const EdgeInsets.only(right: 16, top: 8),
                 child: Text(
-                  'v1.2.1',
+                  'v1.2.2',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.5),
                     fontSize: 11,
@@ -130,9 +161,9 @@ class _DashboardScreenState extends State<DashboardScreen>
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        _indexBadge('KOSPI', '2,654.23', '+1.23%', true),
+                        _indexBadge('KOSPI', _kospiVal, _kospiChg, _kospiUp),
                         const SizedBox(width: 8),
-                        _indexBadge('KOSDAQ', '872.45', '-0.45%', false),
+                        _indexBadge('KOSDAQ', _kosdaqVal, _kosdaqChg, _kosdaqUp),
                       ],
                     ),
                     const SizedBox(height: 6),
