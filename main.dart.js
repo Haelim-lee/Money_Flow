@@ -26178,7 +26178,7 @@ e=h?"\uae09\ub4f1":"\uae09\ub77d"
 d=h?"+":""
 c=j.b
 s=8
-return A.U(A.I6(A.ac(["embeds",A.a([A.ac(["title",f+" "+c+" "+e+" \uac10\uc9c0","description","**"+c+"** ("+j.a+")\n\ub4f1\ub77d\ub960: **"+d+B.c.a_(i,2)+"%**\n\ud604\uc7ac\uac00: "+B.c.a_(j.c,0)+"\uc6d0","color",g,"footer",A.ac(["text","MFlow \uc790\ub3d9 \uac10\uc9c0 \u2022 v1.2.2"],o,o)],o,n)],m)],o,l)),$async$a_z)
+return A.U(A.I6(A.ac(["embeds",A.a([A.ac(["title",f+" "+c+" "+e+" \uac10\uc9c0","description","**"+c+"** ("+j.a+")\n\ub4f1\ub77d\ub960: **"+d+B.c.a_(i,2)+"%**\n\ud604\uc7ac\uac00: "+B.c.a_(j.c,0)+"\uc6d0","color",g,"footer",A.ac(["text","MFlow \uc790\ub3d9 \uac10\uc9c0 \u2022 v1.2.3"],o,o)],o,n)],m)],o,l)),$async$a_z)
 case 8:if(a1)b.push(c)
 case 7:case 4:++k
 s=3
@@ -82134,7 +82134,7 @@ p=q.a
 p.aa(new A.ahv(p))
 o=t.N
 s=2
-return A.U(A.I6(A.ac(["embeds",A.a([A.ac(["title","\ud83d\udd14 MFlow \uc54c\ub9bc \ud14c\uc2a4\ud2b8","description","\uc54c\ub9bc\uc774 \uc815\uc0c1\uc801\uc73c\ub85c \uc791\ub3d9\ud569\ub2c8\ub2e4!\n\uae09\ub4f1/\uae09\ub77d \uac10\uc9c0 \uc54c\ub9bc\uc774 \uc774\ub807\uac8c \ub3c4\ucc29\ud574\uc694.","color",1710638,"footer",A.ac(["text","MFlow v1.2.2"],o,o)],o,t.K)],t.Mq)],o,t.z)),$async$$0)
+return A.U(A.I6(A.ac(["embeds",A.a([A.ac(["title","\ud83d\udd14 MFlow \uc54c\ub9bc \ud14c\uc2a4\ud2b8","description","\uc54c\ub9bc\uc774 \uc815\uc0c1\uc801\uc73c\ub85c \uc791\ub3d9\ud569\ub2c8\ub2e4!\n\uae09\ub4f1/\uae09\ub77d \uac10\uc9c0 \uc54c\ub9bc\uc774 \uc774\ub807\uac8c \ub3c4\ucc29\ud574\uc694.","color",1710638,"footer",A.ac(["text","MFlow v1.2.3"],o,o)],o,t.K)],t.Mq)],o,t.z)),$async$$0)
 case 2:n=b
 p.aa(new A.ahw(p))
 if(m.e!=null){m=m.ai(t.Pu)
@@ -82179,7 +82179,7 @@ $2(a,b){var s,r=null,q=t.p,p=A.a([],q),o=this.a
 if(o.e)p.push(B.MP)
 else p.push(new A.dL(new A.ahB(o),r))
 s=B.c.Y(127.5)
-p.push(new A.bS(B.EW,A.a9("v1.2.2",r,r,r,r,A.ar(r,r,A.E(s,255,255,255),r,r,r,r,r,r,r,r,11,r,r,r,r,r,!0,r,r,r,r,r,r,r,r),r,r),r))
+p.push(new A.bS(B.EW,A.a9("v1.2.3",r,r,r,r,A.ar(r,r,A.E(s,255,255,255),r,r,r,r,r,r,r,r,11,r,r,r,r,r,!0,r,r,r,r,r,r,r,r),r,r),r))
 s=A.aD(r,A.bn(A.a([B.VB,B.bK,A.bx(A.a([o.ML("KOSPI",o.f,o.r,o.w),B.b9,o.ML("KOSDAQ",o.x,o.y,o.z)],q),B.v,B.l,B.m),B.dO,A.a9(this.b,r,r,r,r,A.ar(r,r,A.E(s,255,255,255),r,r,r,r,r,r,r,r,11,r,r,r,r,r,!0,r,r,r,r,r,r,r,r),r,r)],q),B.N,B.jQ,B.bk),B.k,r,r,B.AO,r,r,r,B.Fc,r)
 o=o.d
 o===$&&A.b()
