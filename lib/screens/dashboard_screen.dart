@@ -129,7 +129,7 @@ class _DashboardScreenState extends State<DashboardScreen>
               Padding(
                 padding: const EdgeInsets.only(right: 16, top: 8),
                 child: Text(
-                  'v1.2.2',
+                  'v1.2.3',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.5),
                     fontSize: 11,

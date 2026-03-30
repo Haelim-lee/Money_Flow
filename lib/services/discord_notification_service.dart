@@ -26,7 +26,7 @@ class DiscordNotificationService {
           'title': '🔔 MFlow 알림 테스트',
           'description': '알림이 정상적으로 작동합니다!\n급등/급락 감지 알림이 이렇게 도착해요.',
           'color': 0x1A1A2E,
-          'footer': {'text': 'MFlow v1.2.2'},
+          'footer': {'text': 'MFlow v1.2.3'},
         }
       ]
     });
@@ -53,7 +53,7 @@ class DiscordNotificationService {
                   '등락률: **$sign${stock.changePercent.toStringAsFixed(2)}%**\n'
                   '현재가: ${stock.price.toStringAsFixed(0)}원',
               'color': color,
-              'footer': {'text': 'MFlow 자동 감지 • v1.2.2'},
+              'footer': {'text': 'MFlow 자동 감지 • v1.2.3'},
             }
           ]
         });
