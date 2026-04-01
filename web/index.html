@@ -33,6 +33,14 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+  <script>
+    // 새 서비스 워커가 활성화되면 자동으로 페이지 새로고침
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        window.location.reload();
+      });
+    }
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
