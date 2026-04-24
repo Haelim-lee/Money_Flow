@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../data/mock_data.dart';
 import '../models/recommendation.dart';
+import '../models/stock.dart';
 import '../services/discord_notification_service.dart';
 import '../services/kis_service.dart';
 import '../widgets/stock_card.dart';
@@ -231,7 +232,42 @@ class _DashboardScreenState extends State<DashboardScreen>
   }
 }
 
-class _WatchlistTab extends StatelessWidget {
+class _WatchlistTab extends StatefulWidget {
+  @override
+  State<_WatchlistTab> createState() => _WatchlistTabState();
+}
+
+class _WatchlistTabState extends State<_WatchlistTab> {
+  late List<Stock> _stocks;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _stocks = List.from(mockStocks);
+    _loadPrices();
+  }
+
+  Future<void> _loadPrices() async {
+    final updated = await Future.wait<Stock>(
+      _stocks.map((s) async {
+        final data = await KisService.getStockPrice(s.symbol);
+        if (data == null) return s;
+        return s.copyWith(
+          price: data['price'],
+          change: data['change'],
+          changePercent: data['changePercent'],
+          volume: data['volume'],
+        );
+      }),
+    );
+    if (!mounted) return;
+    setState(() {
+      _stocks = updated;
+      _loading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -249,18 +285,23 @@ class _WatchlistTab extends StatelessWidget {
               ),
             ],
           ),
-          child: Column(
-            children: mockStocks
-                .map((s) => StockCard(
-                      stock: s,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => ChartScreen(stock: s)),
-                      ),
-                    ))
-                .toList(),
-          ),
+          child: _loading
+              ? const Padding(
+                  padding: EdgeInsets.all(32),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              : Column(
+                  children: _stocks
+                      .map((s) => StockCard(
+                            stock: s,
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => ChartScreen(stock: s)),
+                            ),
+                          ))
+                      .toList(),
+                ),
         ),
         const SizedBox(height: 24),
       ],

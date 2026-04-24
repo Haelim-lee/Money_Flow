@@ -18,6 +18,24 @@ class Stock {
   });
 
   bool get isUp => change >= 0;
+
+  Stock copyWith({
+    double? price,
+    double? change,
+    double? changePercent,
+    double? volume,
+    List<double>? chartData,
+  }) {
+    return Stock(
+      symbol: symbol,
+      name: name,
+      price: price ?? this.price,
+      change: change ?? this.change,
+      changePercent: changePercent ?? this.changePercent,
+      volume: volume ?? this.volume,
+      chartData: chartData ?? this.chartData,
+    );
+  }
 }
 
 class NewsItem {
